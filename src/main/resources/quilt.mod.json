@@ -1,0 +1,46 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "io.github.silverandro",
+		"id": "bettersmoke",
+		"version": "${version}",
+		"metadata": {
+			"name": "Better Smoke",
+			"description": "Makes campfire smoke \"better\".",
+			"contributors": {
+				"Silver": "Owner"
+			},
+			"contact": {
+				"issues": "https://github.com/SilverAndro/BetterSmoke/issues",
+				"sources": "hhttps://github.com/SilverAndro/BetterSmoke"
+			},
+			"icon": "assets/example_mod/icon.png"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"init": {
+				"adapter": "kotlin",
+				"value": "io.github.silverandro.bettersmoke.BetterSmokeMain"
+			}
+		},
+		"depends": [
+			{
+				"id": "quilt_loader",
+				"versions": ">=0.17.0-"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=4.0.0-"
+			},
+			{
+				"id": "minecraft",
+				"versions": ">=1.19"
+			},
+			{
+				"id": "qkl",
+				"versions": "*"
+			}
+		]
+	},
+	"mixin": "bettersmoke.mixins.json"
+}
