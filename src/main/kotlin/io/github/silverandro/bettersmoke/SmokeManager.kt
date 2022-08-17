@@ -1,59 +1,69 @@
 package io.github.silverandro.bettersmoke
 
-import angleDist
-import lerp
 import net.minecraft.util.math.*
 import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.World
-import org.quiltmc.qsl.networking.api.PlayerLookup
 import kotlin.math.*
 
 object SmokeManager {
+    // This leaks memory, but I cant think of an easy way to make it *not* without
+    // Either using up a bunch of extra memory or causing lag spikes
+    // With lots of campfires in the world (or being unloaded)
+    // TODO: Maybe consider parallel processing for eventual correctness?
     private val keepers = mutableMapOf<RegistryKey<World>, MutableMap<BlockPos, SmokeKeeper>>()
 
     @JvmStatic
     fun lookupSmoke(world: World, pos: BlockPos, tooMuchSmoke: Boolean): Vec3d {
         val keeperLookup = keepers.computeIfAbsent(world.registryKey) { mutableMapOf() }
         val keeper = keeperLookup.computeIfAbsent(pos) { SmokeKeeper() }
-        return keeper.computeNewSmoke(world, pos, tooMuchSmoke)
+        return keeper.computeNewSmoke(world, pos)
     }
 
     private class SmokeKeeper {
         var current = 0.0
         var target = 0.0
+        var currentDiv = 100.0
+        var targetDiv = 100.0
 
-        fun computeNewSmoke(world: World, pos: BlockPos, tooMuchSmoke: Boolean): Vec3d {
+        fun computeNewSmoke(world: World, pos: BlockPos): Vec3d {
             val targetPlayer = world
-                .getClosestPlayer(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 6.5) {
+                .getClosestPlayer(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble(), 4.2) {
                     it.y >= pos.y - 0.1
                 }
+
+            val dist = targetPlayer?.pos?.squaredDistanceTo(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())
 
             target = if (targetPlayer == null) {
                 0.0
             } else {
-                atan2(targetPlayer.x - (pos.x + 0.5), targetPlayer.z - (pos.z + 0.5))
+                atan2(targetPlayer.x - (pos.x + 0.5), targetPlayer.z - (pos.z + 0.5)).also {
+                    if (angleDist(current, target) < 0.01 && currentDiv > 40) {
+                        current = it
+                    }
+                }
             }
 
-            current = current.lerp(target, 0.06)
+            targetDiv = if (dist != null) {
+                val range = 1 - (sqrt(dist) / 4.2)
+                (range * 10) + 15
+            } else {
+                100.0
+            }
 
-            BetterSmokeMain.logger.info(targetPlayer?.entityName)
-            BetterSmokeMain.logger.info(target.toString())
-            BetterSmokeMain.logger.info(current.toString())
+            currentDiv = currentDiv.lerp(targetDiv, 0.002)
+            current = current.lerpAngle(target, 0.003)
+
+            BetterSmokeMain.logger.info("$currentDiv $targetDiv $current $target")
 
             if (angleDist(current, target) < 0.01 && targetPlayer == null) {
-                return if (tooMuchSmoke) HIGH_SMOKE else LOW_SMOKE
+                return Vec3d(0.0, 0.07, 0.0)
             }
 
             return Vec3d(
-                sin(current) / 10,
-                if (tooMuchSmoke) HIGH_SMOKE.y else LOW_SMOKE.y,
-                cos(current) / 10
+                sin(current) / currentDiv,
+                0.07,
+                cos(current) / currentDiv
             )
-        }
-
-        companion object {
-            val LOW_SMOKE = Vec3d(0.0, 0.07, 0.0)
-            val HIGH_SMOKE = Vec3d(0.0, 0.005, 0.0)
         }
     }
 }

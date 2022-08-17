@@ -21,6 +21,10 @@
 			"init": {
 				"adapter": "kotlin",
 				"value": "io.github.silverandro.bettersmoke.BetterSmokeMain"
+			},
+			"client_init": {
+				"adapter": "kotlin",
+				"value": "io.github.silverandro.bettersmoke.BetterSmokeClient"
 			}
 		},
 		"depends": [
