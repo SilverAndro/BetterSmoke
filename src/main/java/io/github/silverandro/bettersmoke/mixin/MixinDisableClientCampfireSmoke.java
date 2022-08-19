@@ -19,13 +19,13 @@ public class MixinDisableClientCampfireSmoke {
 		RandomGenerator randomGenerator = world.getRandom();
 		if (lotsOfSmoke) {
 			world.addParticle(
-					ParticleTypes.SMOKE,
-					(double)pos.getX() + 0.5 + randomGenerator.nextDouble() / 4.0 * (double)(randomGenerator.nextBoolean() ? 1 : -1),
-					(double)pos.getY() + 0.4,
-					(double)pos.getZ() + 0.5 + randomGenerator.nextDouble() / 4.0 * (double)(randomGenerator.nextBoolean() ? 1 : -1),
-					0.0,
-					0.005,
-					0.0
+				ParticleTypes.SMOKE,
+				(double) pos.getX() + 0.5 + randomGenerator.nextDouble() / 4.0 * (double) (randomGenerator.nextBoolean() ? 1 : -1),
+				(double) pos.getY() + 0.4,
+				(double) pos.getZ() + 0.5 + randomGenerator.nextDouble() / 4.0 * (double) (randomGenerator.nextBoolean() ? 1 : -1),
+				0.0,
+				0.005,
+				0.0
 			);
 		}
 	}

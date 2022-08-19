@@ -1,9 +1,13 @@
 package io.github.silverandro.bettersmoke
 
-import net.minecraft.util.math.*
+import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.RegistryKey
 import net.minecraft.world.World
-import kotlin.math.*
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 object SmokeManager {
     // This leaks memory, but I cant think of an easy way to make it *not* without
@@ -13,7 +17,7 @@ object SmokeManager {
     private val keepers = mutableMapOf<RegistryKey<World>, MutableMap<BlockPos, SmokeKeeper>>()
 
     @JvmStatic
-    fun lookupSmoke(world: World, pos: BlockPos, tooMuchSmoke: Boolean): Vec3d {
+    fun lookupSmoke(world: World, pos: BlockPos): Vec3d {
         val keeperLookup = keepers.computeIfAbsent(world.registryKey) { mutableMapOf() }
         val keeper = keeperLookup.computeIfAbsent(pos) { SmokeKeeper() }
         return keeper.computeNewSmoke(world, pos)
@@ -52,8 +56,6 @@ object SmokeManager {
 
             currentDiv = currentDiv.lerp(targetDiv, 0.002)
             current = current.lerpAngle(target, 0.003)
-
-            BetterSmokeMain.logger.info("$currentDiv $targetDiv $current $target")
 
             if (angleDist(current, target) < 0.01 && targetPlayer == null) {
                 return Vec3d(0.0, 0.07, 0.0)

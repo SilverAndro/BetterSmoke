@@ -7,8 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.particle.DefaultParticleType;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -28,14 +26,9 @@ public class MixinServerCampfireSmoke {
 	private static void betterSmoke$spawnCustomServerSideCampfireSmoke(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire, CallbackInfo ci) {
 		RandomGenerator randomGenerator = world.getRandom();
 		if (world instanceof ServerWorld sw && randomGenerator.nextInt(10) <= 3) {
-
 			boolean isSignal = sw.getBlockState(pos).get(CampfireBlock.SIGNAL_FIRE);
 
-			DefaultParticleType defaultParticleType = isSignal ?
-					ParticleTypes.CAMPFIRE_SIGNAL_SMOKE :
-					ParticleTypes.CAMPFIRE_COSY_SMOKE;
-
-			Vec3d smokeVector = SmokeManager.lookupSmoke(sw, pos, isSignal);
+			Vec3d smokeVector = SmokeManager.lookupSmoke(sw, pos);
 
 			PlayerLookup.tracking(sw, pos).forEach(serverPlayerEntity -> {
 				if (ServerPlayNetworking.canSend(serverPlayerEntity, BetterSmokeMain.INSTANCE.getSMOKE_PACKET_CHANNEL())) {
