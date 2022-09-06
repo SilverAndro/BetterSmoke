@@ -49,7 +49,7 @@ object SmokeManager {
 
             targetDiv = if (dist != null) {
                 val range = 1 - (sqrt(dist) / 4.2)
-                (range * 10) + 12
+                (range * 10) + 10
             } else {
                 100.0
             }
