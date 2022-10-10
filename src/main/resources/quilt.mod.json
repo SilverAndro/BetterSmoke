@@ -14,7 +14,7 @@
 				"issues": "https://github.com/SilverAndro/BetterSmoke/issues",
 				"sources": "hhttps://github.com/SilverAndro/BetterSmoke"
 			},
-			"icon": "assets/example_mod/icon.png"
+			"icon": "assets/bettersmoke/icon.png"
 		},
 		"intermediate_mappings": "net.fabricmc:intermediary",
 		"entrypoints": {
